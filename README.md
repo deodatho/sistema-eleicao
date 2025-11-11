@@ -19,92 +19,112 @@ Este repositório contém um sistema de eleição com duas partes principais:
 
 Aplicação para gerenciar um sistema de votação. O front-end é uma app React criada com Vite. O back-end é um servidor Express que se comunica com um banco Postgres.
 
-## Estrutura do repositório
+# Sistema de Eleição (sistema_eleicao)
 
-- `frontend/` — código da aplicação React (Vite). Principais scripts: `dev`, `build`, `preview`.
-- `server/` — código do servidor Node/Express. Usa `dotenv` e `pg`.
+Uma aplicação minimal de sistema de votação composta por um front-end em React (Vite) e um back-end em Node/Express com suporte a Postgres.
 
-## Pré-requisitos
+Este README foca em como usar o projeto e o fluxo principal da aplicação — instalação, execução local e instruções básicas de uso. Para detalhes de desenvolvimento internos, consulte os arquivos nas pastas `frontend/` e `server/`.
+
+## Principais funcionalidades (visão geral)
+
+- Interface web para usuários e administradores.
+- Fluxo de usuário: registro, autenticação e votação.
+- Fluxo de administrador: painel com visão das votações/tabelas e operações administrativas.
+- Persistência em Postgres pelo servidor Express.
+
+Páginas/rotas front-end existentes (diretório `src/pages`):
+
+- `Home` — página inicial
+- `Login` — autenticação
+- `Register_usr` — registro de usuário
+- `Register_admin` — registro de administrador
+- `Vote` — interface de votação
+- `Dashboard` e `Admin` — interfaces administrativas
+- `Tables` — visualização de resultados/tabelas
+
+## Requisitos
 
 - Node.js (recomendo v18+)
-- npm ou yarn
-- Postgres (se você usar o banco localmente)
+- npm (ou yarn)
+- Postgres (se executar localmente o banco de dados)
 
-## Instalação e execução (desenvolvimento)
+## Instalação rápida (desenvolvimento)
 
-1. Clone este repositório (se ainda não o fez):
-
-```bash
-git clone <URL-DO-REPO>
-cd sistema-eleicao
-```
-
-2. Frontend
+1. Instale dependências e rode o front-end
 
 ```bash
 cd frontend
 npm install
 npm run dev
-# A aplicação será servida por Vite (normalmente em http://localhost:5173)
+# Vite normalmente expõe a app em http://localhost:5173
 ```
 
-3. Server
+2. Instale dependências e rode o servidor
 
 ```bash
 cd ../server
 npm install
-# Inicie o servidor (se existe um arquivo server.js / index.js):
+# Iniciar o servidor (substitua se o entrypoint for diferente):
 node server.js
-# ou se for outro entrypoint, ajuste conforme necessário (ex: node index.js)
+# Se o entrypoint for `index.js` ou outro, execute esse arquivo em vez de server.js
 ```
 
-Observação: o `server/` atualmente tem dependências `express`, `dotenv`, `pg` e `cors`. Ajuste variáveis de ambiente conforme a seção abaixo.
+Observação: o front-end usa scripts `dev`, `build` e `preview` (Vite). O servidor depende de `express`, `dotenv`, `pg` e `cors`.
 
-## Build / Produção
+## Como usar a aplicação (fluxos básicos)
 
-Frontend (build estático):
+- Usuário comum:
+
+  1. Acesse `Home` → `Register_usr` para criar conta.
+  2. Faça `Login` com suas credenciais.
+  3. Navegue até `Vote` para participar da votação.
+- Administrador:
+
+  1. Crie a conta de administrador em `Register_admin` (ou provisionada manualmente dependendo da implementação do servidor).
+  2. Faça `Login` como admin e acesse `Admin` / `Dashboard` para ver resultados e tabelas em `Tables`.
+
+Observação: a UI mostra as páginas listadas acima; comportamentos exatos (por exemplo: criação de eleição, permissões, validações) dependem das rotas e endpoints implementados no diretório `server/`.
+
+## Variáveis de ambiente (servidor)
+
+Crie um arquivo `.env` dentro de `server/` com as variáveis necessárias. Um exemplo mínimo:
+
+```env
+PORT=3000
+DATABASE_URL=postgres://usuario:senha@localhost:5432/nome_do_banco
+JWT_SECRET=uma_chave_secreta
+```
+
+Não comite arquivos `.env` no repositório.
+
+## Estrutura rápida do projeto
+
+- `frontend/` — app React (Vite). Código fonte em `src/`.
+- `server/` — servidor Node/Express.
+
+## Build para produção
+
+No `frontend/`:
 
 ```bash
 cd frontend
 npm run build
-# Os arquivos de saída ficarão em `dist/` ou `build/` (conforme a configuração do Vite)
+# Os artefatos de build ficam em `dist/` (ou conforme configuração do Vite)
 ```
 
-Server: preparar e executar conforme a infra desejada (Heroku, VPS, Docker, etc.).
+O servidor pode servir esses arquivos estáticos (ou você pode usar um servidor estático separado). Ajuste a configuração do servidor conforme necessário.
 
-## Variáveis de ambiente
+## Arquivos importantes para desenvolvedores
 
-O `server` usa `dotenv`. Crie um arquivo `.env` em `server/` com as variáveis necessárias, por exemplo:
+- `frontend/src/` — componentes React, rotas e páginas.
+- `frontend/package.json` — scripts e dependências do front-end.
+- `server/server.js` (ou `server/index.js`) — entrypoint do servidor.
+- `server/package.json` — dependências do servidor.
 
-```env
-# Exemplo
-PORT=3000
-DATABASE_URL=postgres://usuario:senha@localhost:5432/nome_do_banco
-# Outras chaves/segredos
-```
+## Licença
 
-Nunca comite `.env` ou segredos no repositório.
+Este repositório inclui um arquivo `LICENCE` com licença MIT.
 
-## Notas sobre Git, `.gitignore` e o que vai para o GitHub
+## Contribuições
 
-- Apenas os arquivos que foram `git add` e `git commit` serão enviados ao GitHub quando você der `git push`.
-- Arquivos listados em `.gitignore` (ex.: `node_modules/`, `dist/`, `.env`) normalmente não são adicionados/committed. No repositório atual, `.gitignore` já contém `node_modules/`, `dist/`, `build/` e `.env`.
-- Se um arquivo confidencial já foi commitado anteriormente, o `.gitignore` sozinho não o remove do histórico — será necessário reescrever o histórico (`git filter-repo` ou `git filter-branch`) e **rotacionar** as credenciais comprometidas.
-
-## Dicas rápidas
-
-- Verificar status antes de push:
-
-```bash
-git status
-```
-
-- Ver o que será enviado ao remoto (commits locais não enviados):
-
-```bash
-git log --oneline origin/$(git rev-parse --abbrev-ref HEAD)..HEAD
-```
-
-## Contribuição
-
-Abra issues ou PRs. Siga boas práticas: commits claros, PRs pequenos e com descrição do que mudou.
+Se quiser contribuir, abra uma issue descrevendo a proposta ou um PR com pequenas mudanças e instruções de teste. Se precisar, eu posso adicionar um `CONTRIBUTING.md` com orientações formais.
